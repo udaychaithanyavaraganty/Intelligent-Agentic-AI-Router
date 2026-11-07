@@ -1,0 +1,84 @@
+classDiagram
+    class AgentOrchestrator {
+        +history
+        +classifier
+        +categories
+        +routing_rules
+        +confidence_threshold
+        +checker
+        +process(request_id, request_text)
+        +record_review(request_id, action, feedback, workflow, operation)
+        +check_approval_route(request_id, category, workflow)
+        +record_failure_feedback(request_id, error)
+    }
+    class Classifier {
+        <<protocol>>
+        +classify(request_text)
+    }
+    class DemoClassifier {
+        +categories
+        +classify(request_text)
+    }
+    class GeminiClassifier {
+        +model
+        +categories
+        +classify(request_text, correction_feedback)
+        +classify_with_feedback(request_text, feedback)
+        +close()
+    }
+    class ValidationResult {
+        +bool valid
+        +bool needs_review
+        +str reason
+    }
+    class CheckerAgent {
+        +check_classification(classification)
+        +check_validation(classification, validation, categories, threshold)
+        +check_route(category, workflow, expected_workflow)
+        +check_execution(workflow, result)
+        +check_review(status, action)
+    }
+    class CheckResult {
+        +bool passed
+        +str feedback
+        +bool retryable
+    }
+    class HistoryService {
+        +create(fields)
+        +get(request_id)
+        +update(request_id, fields)
+        +start_agent_execution(...)
+        +finish_agent_execution(...)
+        +agent_trace(request_id)
+        +stats()
+        +analytics()
+    }
+    class EvaluationStore {
+        +save(report)
+        +list_runs(limit)
+        +get_report(run_id)
+        +get_cases(run_id)
+        +get_csv(run_id)
+    }
+    class ReviewModule {
+        <<module>>
+        +resolve_review(record, action, feedback, execute)
+    }
+    class ExecutionModule {
+        <<module>>
+        +execute_workflow(workflow, request_text)
+    }
+    class WorkflowRegistry {
+        <<module constant>>
+        +WORKFLOWS
+    }
+    Classifier <|.. DemoClassifier
+    Classifier <|.. GeminiClassifier
+    AgentOrchestrator --> Classifier : invokes
+    AgentOrchestrator --> CheckerAgent : checks
+    AgentOrchestrator --> HistoryService : persists trace
+    AgentOrchestrator ..> ValidationResult : receives
+    CheckerAgent ..> CheckResult : returns
+    AgentOrchestrator ..> ReviewModule : review operation
+    AgentOrchestrator ..> ExecutionModule : execution callback
+    ExecutionModule --> WorkflowRegistry : resolves only registered workflow

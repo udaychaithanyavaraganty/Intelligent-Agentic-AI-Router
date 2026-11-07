@@ -1,0 +1,26 @@
+flowchart TD
+    IN[Persisted request] --> ORCH[AgentOrchestrator<br/>shared per-request context]
+    ORCH --> CA[Classification Agent<br/>configured classifier adapter]
+    CA --> CK1[Checker Agent<br/>classification structure]
+    CK1 -->|Pass| VA[Validation Agent<br/>closed-set and confidence gate]
+    CK1 -->|Retryable failure; at most 2 total attempts| FB[Checker feedback]
+    FB --> CA
+    CK1 -->|Retries exhausted| HOLD[Pending human review<br/>no workflow]
+    VA --> CK2[Checker Agent<br/>validation invariant checks]
+    CK2 -->|Pass and review not needed| RA[Routing Agent<br/>fixed category-to-workflow map]
+    CK2 -->|Review needed| HOLD
+    CK2 -->|Retryable validation error| FB
+    RA --> CK3[Checker Agent<br/>canonical route check]
+    CK3 -->|Pass| EA[Execution Agent<br/>local registry lookup]
+    CK3 -->|Mismatch or error| FAIL[Fail closed and record error]
+    EA --> CK4[Checker Agent<br/>result contract check]
+    CK4 -->|Pass| DONE[Completed request]
+    CK4 -->|Failure| FAIL
+    HOLD --> HUMAN[Human reviewer]
+    HUMAN -->|Approve known category and canonical route| REVIEW[Review Agent]
+    HUMAN -->|Reject or clarify| REVIEW
+    REVIEW -->|Approval only| EA2[Tracked execution]
+    REVIEW -->|Reject or clarify| END[Rejected or awaiting clarification]
+    EA2 --> CK5[Checker Agent<br/>review execution and state check]
+    CK5 --> END
+    ORCH -. writes actual stage inputs outputs status timestamps errors feedback .-> TRACE[(SQLite execution trace)]

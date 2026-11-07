@@ -1,0 +1,137 @@
+@media (max-width: 720px) {
+  .advanced-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .analytics-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .advanced-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .advanced-filters input[type="search"] {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .agent-status-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.evaluation-actions {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.evaluation-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.evaluation-kpi {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.evaluation-kpi span,
+.evaluation-kpi small,
+.evaluation-footnote {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.evaluation-kpi strong {
+  font: 20px var(--mono);
+}
+
+.evaluation-panels {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.evaluation-panels .chart-card {
+  min-width: 0;
+}
+
+.evaluation-list {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 12px;
+  margin: 0;
+  font-size: 11px;
+}
+
+.evaluation-list dt {
+  color: var(--muted);
+}
+
+.evaluation-list dd {
+  margin: 0;
+  font-family: var(--mono);
+  text-align: right;
+}
+
+.evaluation-section table {
+  min-width: 520px;
+}
+
+.confusion-card,
+.evaluation-downloads,
+.evaluation-limitations {
+  margin-top: 12px;
+}
+
+.evaluation-downloads {
+  display: flex;
+  gap: 8px;
+}
+
+.evaluation-downloads a {
+  text-decoration: none;
+}
+
+.evaluation-limitations {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.evaluation-limitations summary {
+  padding: 10px 0;
+  cursor: pointer;
+}
+
+.evaluation-limitations pre {
+  max-height: 360px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.theme-dark .evaluation-kpi {
+  background: var(--surface);
+}
+
+@media (max-width: 720px) {
+  .evaluation-actions {
+    align-items: flex-start;
+  }
+
+  .evaluation-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .evaluation-panels {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

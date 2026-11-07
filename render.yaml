@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: p18-intelligent-agentic-ai-router
+    runtime: python
+    plan: starter
+    autoDeploy: false
+    buildCommand: python -m pip install -r requirements.txt
+    startCommand: gunicorn backend.app:app --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 120 --access-logfile - --error-logfile -
+    healthCheckPath: /api/health
+    disk:
+      name: p18-router-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: LLM_PROVIDER
+        value: demo
+      - key: FLASK_DEBUG
+        value: "0"
+      - key: CONFIDENCE_THRESHOLD
+        value: "0.65"
+      - key: LLM_TIMEOUT
+        value: "20"
+      - key: GEMINI_MODEL
+        value: gemini-3.8-flash
+      - key: DATABASE_PATH
+        value: /var/data/router.sqlite3
+      - key: EVALUATION_DATABASE
+        value: /var/data/evaluation_results.sqlite3

@@ -1,0 +1,29 @@
+flowchart TD
+    U[User] --> P1[1.0 Validate HTTP payload]
+    P1 -->|Invalid body or text| ERR[400 response]
+    P1 -->|Valid request <= 4000 chars| P2[2.0 Persist processing request]
+    P2 -->|SQLite error| DBERR[503; stop before classification]
+    P2 -->|Request ID| P3[3.0 Classify]
+    P3 -->|Demo rules or optional Gemini JSON| C[Classification structure]
+    GEM[Gemini API] <-->|Only when real provider configured| P3
+    C --> P4[4.0 Checker and validate]
+    P4 -->|Malformed, unsupported, low confidence, UNKNOWN, or review requested| P7[7.0 Queue for human review]
+    P4 -->|Validated known category| P5[5.0 Select and check deterministic route]
+    P5 -->|Canonical configured route| P6[6.0 Execute registered handler and check result]
+    P5 -->|Inconsistent route or failure| P8[8.0 Record failed state]
+    P6 -->|Valid result| P9[9.0 Return response and trace]
+    P6 -->|Execution error| P8
+    P7 --> H[Human reviewer]
+    H -->|Approve supported canonical route| P6
+    H -->|Reject or clarify| P9
+    P2 --> OPDB[(Operational requests table)]
+    P3 --> TRACE[(Operational agent_executions table)]
+    P4 --> TRACE
+    P5 --> TRACE
+    P6 --> TRACE
+    P7 --> OPDB
+    P8 --> OPDB
+    EVAL[Evaluation CLI] --> TEMP[(Temporary request DB and traces)]
+    TEMP --> MET[Metrics and robustness calculations]
+    MET --> EDB[(Separate evaluation_runs and evaluation_cases)]
+    MET --> FILES[JSON and CSV snapshots]

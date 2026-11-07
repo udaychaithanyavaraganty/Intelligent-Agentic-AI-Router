@@ -1,0 +1,13 @@
+flowchart LR
+    USER[External entity: User] -->|Request text| SYS[P18 Intelligent Agentic AI Router]
+    SYS -->|Decision, result, or review state| USER
+    REVIEWER[External entity: Human reviewer] -->|Approve reject clarify and feedback| SYS
+    SYS -->|Review outcome| REVIEWER
+    SYS -->|Classification request only in Gemini mode| GEM[External entity: Gemini API]
+    GEM -->|Structured classification response| SYS
+    SYS -->|Operational requests and actual agent traces| OPDB[(Operational SQLite store)]
+    OPDB -->|History and trace data| SYS
+    EVAL[External entity: Evaluation operator] -->|Run benchmark command| SYS
+    SYS -->|Metrics and case results| EDB[(Evaluation-only SQLite store)]
+    EDB -->|Stored evaluation summaries| SYS
+    SYS -->|JSON and CSV snapshots| OPERATOR[Evaluation operator]

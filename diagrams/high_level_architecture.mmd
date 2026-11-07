@@ -1,0 +1,25 @@
+flowchart LR
+    U[User] -->|Browser input| FE[Static HTML CSS JavaScript dashboard]
+    FE -->|Same-origin HTTP JSON| API[Flask application and REST API]
+    API -->|Persist request and trace| HDB[(Operational SQLite<br/>requests and agent_executions)]
+    API --> ORCH[AgentOrchestrator]
+    ORCH --> CLASS[Classification component]
+    CLASS --> DEMO[DemoClassifier]
+    CLASS --> GEM[GeminiClassifier optional]
+    GEM -->|Classification request only| GOOGLE[Gemini Developer API]
+    ORCH --> VALID[Validation component]
+    ORCH --> ROUTE[Deterministic route selector]
+    ROUTE --> EXEC[Registered execution component]
+    EXEC --> WF[Six response-only demo workflows]
+    ORCH --> CHECK[Checker component]
+    ORCH --> REVIEW[Review component]
+    REVIEW -->|Human approve reject clarify| U
+    API -->|Read dashboard history traces| HDB
+    CLI[Evaluation CLI] --> ISOLATED[Temporary request history and traces]
+    ISOLATED --> METRICS[Evaluation metrics and robustness probes]
+    METRICS --> EDB[(Separate evaluation SQLite<br/>evaluation_runs and evaluation_cases)]
+    METRICS --> REPORTS[JSON and CSV report files]
+    API -->|Evaluation endpoints| EDB
+    FE -->|Poll persisted status and reports| API
+    MEMORY[Persistent memory and self-reflection<br/>not implemented]
+    style MEMORY stroke-dasharray: 5 5

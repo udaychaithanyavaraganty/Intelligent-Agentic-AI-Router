@@ -1,0 +1,26 @@
+flowchart LR
+    R[Request ID and original text] --> C[Classification result<br/>category confidence explanation review flag metadata]
+    C -->|structured classifier output| CC[Checker checks required fields]
+    CC -->|accepted result| V[Validation result<br/>valid needs_review reason]
+    CC -->|recoverable issue| CF[Checker feedback]
+    CF -->|optional correction context| C
+    V --> VC[Checker verifies allowlist and review invariants]
+    VC -->|known validated intent| D[Routing decision<br/>workflow ID]
+    VC -->|review decision| Q[Review queue state]
+    D --> DC[Checker compares expected configured workflow]
+    DC -->|canonical route| X[Execution result<br/>structured message]
+    X --> XC[Checker verifies result contract]
+    XC --> O[Final request status and result]
+    Q --> H[Human action and feedback]
+    H -->|approve known canonical route| X
+    H -->|reject or clarify| O
+    R -. context .-> CTX[(Shared orchestrator context)]
+    C -. context .-> CTX
+    V -. context .-> CTX
+    D -. context .-> CTX
+    X -. context .-> CTX
+    C -. actual inputs outputs and timestamps .-> TRACE[(Persisted agent_executions)]
+    V -. trace .-> TRACE
+    D -. trace .-> TRACE
+    X -. trace .-> TRACE
+    CC -. checker result and feedback .-> TRACE

@@ -1,0 +1,67 @@
+sequenceDiagram
+    actor User
+    participant UI as Dashboard
+    participant API as Flask API
+    participant DB as HistoryService and SQLite
+    participant O as AgentOrchestrator
+    participant C as Classifier
+    participant K as CheckerAgent
+    participant V as ValidationAgent
+    participant R as RoutingAgent
+    participant X as ExecutionAgent
+    participant RV as ReviewAgent
+    User->>UI: Enter request
+    UI->>API: POST /api/requests JSON
+    API->>API: Validate body and character limit
+    API->>DB: Insert processing request
+    DB-->>API: request_id
+    API->>O: process(request_id, text)
+    O->>DB: Start classification trace
+    O->>C: classify(text)
+    C-->>O: Structured category result
+    O->>DB: Finish classification trace
+    O->>K: Check classification
+    K-->>O: CheckResult
+    O->>V: Validate category and confidence
+    V-->>O: ValidationResult
+    O->>K: Check validation invariants
+    K-->>O: CheckResult
+    alt Review required or UNKNOWN
+        O->>DB: Persist pending_review; no routing or execution
+        API-->>UI: 201 review state and trace
+        User->>UI: Approve, reject, or clarify
+        UI->>API: POST /api/reviews/{id}
+        opt Approval of eligible known supported category
+            API->>O: check_approval_route(category, workflow)
+            O->>K: Check canonical route
+            O-->>API: Route approved
+        end
+        API->>O: record_review(...)
+        O->>RV: resolve_review(record, action, feedback)
+        opt Approval of supported known category
+            RV->>O: execute_tracked(workflow, request)
+            O->>X: Execute registered workflow
+            X-->>O: Structured result
+            O-->>RV: Tracked execution result
+        end
+        RV-->>O: Review state and optional result
+        opt Approval result
+            O->>K: Check execution result
+        end
+        O->>K: Check review state transition
+        O->>K: Check review state transition
+        API-->>UI: Updated review record and trace
+    else Valid known category
+        O->>R: Select configured workflow
+        R-->>O: Canonical workflow ID
+        O->>K: Check route against configured workflow
+        O->>X: Execute registered workflow
+        X-->>O: Structured result
+        O->>K: Check execution result
+        O->>DB: Finish trace and persist outcome
+        API-->>UI: 201 result and trace
+    end
+    UI->>API: Poll GET /api/agent-activity
+    API->>DB: Read latest persisted trace
+    DB-->>API: Actual trace events
+    API-->>UI: Agent activity JSON

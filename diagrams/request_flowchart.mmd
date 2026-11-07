@@ -1,0 +1,31 @@
+flowchart TD
+    START([Request arrives]) --> INPUT{JSON object with non-empty request <= 4000 chars?}
+    INPUT -->|No| BAD[400; no agent execution]
+    INPUT -->|Yes| SAVE[Commit request record as processing]
+    SAVE -->|Storage error| STOREERR[503; classifier and workflow not called]
+    SAVE --> CLASS[Closed-set classification]
+    CLASS --> CCHK{Classification structure passes checker?}
+    CCHK -->|Retryable and fewer than 2 attempts| RETRY[Record checker feedback]
+    RETRY --> CLASS
+    CCHK -->|Exhausted or invalid| REVIEW[Set pending_review; no workflow]
+    CCHK -->|Yes| VALID[Validate category, confidence, and review decision]
+    VALID --> VCHK{Validation and checker approve automatic path?}
+    VCHK -->|No| REVIEW
+    VCHK -->|Yes| ROUTE[Select configured category workflow]
+    ROUTE --> RCHK{Selected route equals canonical configured route?}
+    RCHK -->|No| FAILED[Record failure; no execution]
+    RCHK -->|Yes| EXEC[Resolve workflow in local registry]
+    EXEC --> EXCHK{Structured execution result valid?}
+    EXCHK -->|No or exception| FAILED
+    EXCHK -->|Yes| DONE[Persist completed result and actual trace]
+    REVIEW --> HUMAN{Human review action}
+    HUMAN -->|Approve known supported category with canonical route| APPROVE[Re-check route, then tracked execution]
+    HUMAN -->|Reject| REJECT[Persist rejected state]
+    HUMAN -->|Clarify| CLARIFY[Persist awaiting_clarification state]
+    APPROVE --> DONE
+    BAD --> END([Return])
+    STOREERR --> END
+    FAILED --> END
+    DONE --> END
+    REJECT --> END
+    CLARIFY --> END

@@ -1,0 +1,9 @@
+{
+  "TECHNICAL_SUPPORT":"technical_support",
+  "GENERAL_INFORMATION":"general_information",
+  "DATA_ANALYSIS":"data_analysis",
+  "SOFTWARE_DEVELOPMENT":"software_development",
+  "ACCOUNT_MANAGEMENT":"account_management",
+  "TASK_AUTOMATION":"task_automation",
+  "UNKNOWN":"human_review"
+}

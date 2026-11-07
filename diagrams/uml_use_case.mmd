@@ -1,0 +1,22 @@
+flowchart LR
+    USER[/"Actor: User"/]
+    HUMAN[/"Actor: Human reviewer"/]
+    OP[/"Actor: Evaluation operator"/]
+    subgraph APP["P18 application"]
+        UC1([Submit natural-language request])
+        UC2([View decision and workflow result])
+        UC3([Inspect request history and trace])
+        UC4([View operational metrics])
+        UC5([Resolve pending review])
+        UC6([Run offline benchmark])
+        UC7([View benchmark and download reports])
+    end
+    USER --> UC1
+    USER --> UC2
+    USER --> UC3
+    USER --> UC4
+    HUMAN --> UC5
+    OP --> UC6
+    OP --> UC7
+    UC1 -. includes .-> UC2
+    UC5 -. approval of supported known category may include .-> UC2

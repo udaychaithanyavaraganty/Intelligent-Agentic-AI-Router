@@ -1,0 +1,9 @@
+[
+  {"id":"TECHNICAL_SUPPORT","description":"Diagnose or resolve a technical issue.","workflow":"technical_support"},
+  {"id":"GENERAL_INFORMATION","description":"Answer a factual or explanatory question.","workflow":"general_information"},
+  {"id":"DATA_ANALYSIS","description":"Analyze, summarize, or interpret data.","workflow":"data_analysis"},
+  {"id":"SOFTWARE_DEVELOPMENT","description":"Create, debug, or review software.","workflow":"software_development"},
+  {"id":"ACCOUNT_MANAGEMENT","description":"Help with account access, settings, or profile changes.","workflow":"account_management"},
+  {"id":"TASK_AUTOMATION","description":"Automate a clearly specified repetitive task.","workflow":"task_automation"},
+  {"id":"UNKNOWN","description":"Intent is unsupported, ambiguous, or cannot be classified safely.","workflow":"human_review"}
+]

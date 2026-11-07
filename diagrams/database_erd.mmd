@@ -1,0 +1,50 @@
+erDiagram
+    REQUESTS ||--o{ AGENT_EXECUTIONS : "has actual stage events"
+    EVALUATION_RUNS ||--o{ EVALUATION_CASES : "contains indexed cases"
+
+    REQUESTS {
+        INTEGER id PK
+        TEXT request_text
+        TEXT category
+        REAL confidence
+        TEXT explanation
+        TEXT metadata
+        TEXT validation_status
+        TEXT review_reason
+        TEXT workflow
+        TEXT status
+        TEXT result
+        TEXT error
+        TEXT reviewer_feedback
+        TEXT created_at
+        REAL latency_ms
+    }
+    AGENT_EXECUTIONS {
+        INTEGER id PK
+        INTEGER request_id FK
+        TEXT agent
+        TEXT status
+        TEXT started_at
+        TEXT completed_at
+        TEXT inputs
+        TEXT outputs
+        TEXT error
+        TEXT checker_feedback
+        INTEGER retry_attempt
+    }
+    EVALUATION_RUNS {
+        TEXT run_id PK
+        TEXT created_at
+        TEXT provider
+        TEXT model
+        TEXT dataset_name
+        TEXT dataset_version
+        TEXT dataset_sha256
+        INTEGER sample_count
+        TEXT report_json
+    }
+    EVALUATION_CASES {
+        TEXT run_id PK, FK
+        INTEGER case_index PK
+        TEXT case_json
+    }

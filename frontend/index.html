@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f3f6f1">
+  <title>Intelligent Agentic AI Router</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="/assets/css/dashboard-responsive.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="/" aria-label="Router home">
+        <span class="brand-mark" aria-hidden="true">R</span>
+        <span>ROUTER<span class="brand-sub">P18 / CONTROL PLANE</span></span>
+      </a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a class="nav-link active" href="#overview"><span class="nav-glyph">01</span>Overview</a>
+        <a class="nav-link" href="#agent-activity"><span class="nav-glyph">02</span>Agent monitor</a>
+        <a class="nav-link" href="#analytics"><span class="nav-glyph">03</span>Analytics</a>
+        <a class="nav-link" href="#evaluation"><span class="nav-glyph">04</span>Evaluation</a>
+        <a class="nav-link" href="#memory"><span class="nav-glyph">05</span>Memory</a>
+        <a class="nav-link" href="#review"><span class="nav-glyph">06</span>Human review<span id="nav-review-count" class="nav-count">0</span></a>
+        <a class="nav-link" href="#history"><span class="nav-glyph">07</span>Request history</a>
+        <a class="nav-link" href="#monitoring"><span class="nav-glyph">08</span>System health</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="provider-label">CLASSIFIER PROVIDER</div>
+        <div class="provider-line"><span class="live-dot"></span><span id="provider-name">Checking...</span></div>
+        <div id="provider-mode" class="provider-label">Checking mode...</div>
+        <p>Closed-set decisions.<br>Deterministic routes.</p>
+      </div>
+    </aside>
+
+    <main class="main-content" id="overview">
+      <header class="topbar">
+        <div><p class="eyebrow">AGENT OPERATIONS / P18</p><h1>Intelligent Agentic AI Router</h1></div>
+        <div class="topbar-actions"><span id="topbar-status" class="topbar-status"><span class="live-dot"></span>Connecting...</span><button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to dark theme">◐ <span>Theme</span></button></div>
+      </header>
+
+      <section class="intro-row">
+        <div>
+          <p class="lede">A controlled decision layer for natural-language work.</p>
+          <p class="sublede">Classify into a fixed set, validate confidence, then route only through approved workflows.</p>
+        </div>
+        <div class="threshold-chip"><span>CONFIDENCE FLOOR</span><strong id="confidence-floor">65%</strong></div>
+      </section>
+
+      <section class="metrics-grid advanced-metrics" aria-label="Request metrics">
+        <article class="metric metric-dark"><span class="metric-label">TOTAL REQUESTS</span><strong id="stat-total">0</strong><span class="metric-note">Recorded requests</span></article>
+        <article class="metric"><span class="metric-label">SUCCESSFULLY CLASSIFIED</span><strong id="stat-classified">0</strong><span class="metric-note">Validation passed</span></article>
+        <article class="metric"><span class="metric-label">SUCCESSFULLY ROUTED</span><strong id="stat-routed">0</strong><span class="metric-note">Recorded workflow selections</span></article>
+        <article class="metric"><span class="metric-label">PENDING REVIEWS</span><strong id="stat-review">0</strong><span class="metric-note">Awaiting a human decision</span></article>
+        <article class="metric metric-alert"><span class="metric-label">FAILED EXECUTIONS</span><strong id="stat-failed">0</strong><span class="metric-note">Agent execution failures</span></article>
+        <article class="metric"><span class="metric-label">AVG EXECUTION TIME</span><strong id="stat-execution-time">0 ms</strong><span class="metric-note">Measured from execution traces</span></article>
+      </section>
+
+      <section class="workbench" aria-label="Submit a request">
+        <div class="section-heading"><div><p class="eyebrow">01 / INTAKE</p><h2>Route a request</h2></div><span class="micro-label">MAX 4,000 CHARACTERS</span></div>
+        <form id="request-form">
+          <label class="sr-only" for="request-input">Describe what you need</label>
+          <textarea id="request-input" maxlength="4000" placeholder="Describe the request in plain language..." required></textarea>
+          <div class="composer-footer">
+            <div class="examples" aria-label="Example requests">
+              <button type="button" class="example-chip" data-example="My printer is not working after the latest update.">Printer issue</button>
+              <button type="button" class="example-chip" data-example="Can you explain how a REST API works?">Explain an API</button>
+              <button type="button" class="example-chip" data-example="Analyze this dataset and identify the monthly trend.">Analyze data</button>
+            </div>
+            <div class="submit-group"><span id="char-count">0 / 4000</span><button class="primary-button" id="submit-button" type="submit">Classify &amp; route <span aria-hidden="true">↗</span></button></div>
+          </div>
+        </form>
+        <p id="form-error" class="form-error" role="alert"></p>
+      </section>
+
+      <section id="latest-result" class="latest-result" hidden aria-live="polite">
+        <div class="section-heading"><div><p class="eyebrow">02 / DECISION RECORD</p><h2>Latest result</h2></div><span id="result-status" class="status-pill">—</span></div>
+        <div class="result-grid">
+          <div class="result-primary"><span class="field-label">PREDICTED CATEGORY</span><strong id="result-category">—</strong><p id="result-request"></p></div>
+          <div class="result-field"><span class="field-label">CONFIDENCE</span><strong id="result-confidence">—</strong><div class="confidence-track"><span id="confidence-bar"></span></div></div>
+          <div class="result-field"><span class="field-label">WORKFLOW</span><strong id="result-workflow">—</strong></div>
+          <div class="result-field"><span class="field-label">VALIDATION</span><strong id="result-validation">—</strong></div>
+          <div class="result-explanation"><span class="field-label">CLASSIFICATION EXPLANATION</span><p id="result-explanation">—</p><p id="result-execution" class="execution-note"></p></div>
+        </div>
+      </section>
+
+      <section id="agent-activity" class="content-section agent-activity-section">
+        <div class="section-heading">
+          <div><p class="eyebrow">03 / MULTI-AGENT TRACE</p><h2>Agent activity</h2></div>
+          <label class="activity-picker"><span>REQUEST</span><select id="agent-request-select" aria-label="Select request execution trace"><option value="">No requests</option></select></label>
+        </div>
+        <p id="agent-current" class="agent-current">No agent execution recorded.</p>
+        <div id="agent-status-grid" class="agent-status-grid" aria-label="Agent statuses"></div>
+        <div id="agent-timeline" class="agent-timeline"><div class="empty-state">Agent execution details will appear here.</div></div>
+      </section>
+
+      <section id="analytics" class="content-section analytics-section">
+        <div class="section-heading"><div><p class="eyebrow">04 / ANALYTICS</p><h2>Operational analytics</h2></div><span id="analytics-window" class="micro-label">ALL RECORDED DATA</span></div>
+        <p id="evaluation-note" class="analytics-note">Evaluation metrics are available only when persisted evaluation runs exist.</p>
+        <div id="analytics-grid" class="analytics-grid">
+          <article class="chart-card"><h3>Requests over time</h3><div id="chart-requests" class="chart-area"></div></article>
+          <article class="chart-card"><h3>Category distribution</h3><div id="chart-categories" class="chart-area"></div></article>
+          <article class="chart-card"><h3>Confidence distribution</h3><div id="chart-confidence" class="chart-area"></div></article>
+          <article class="chart-card"><h3>Execution outcomes</h3><div id="chart-outcomes" class="chart-area"></div></article>
+          <article class="chart-card"><h3>Human reviews over time</h3><div id="chart-reviews" class="chart-area"></div></article>
+          <article class="chart-card"><h3>Agent execution latency</h3><div id="chart-latency" class="chart-area"></div></article>
+        </div>
+      </section>
+
+      <section id="evaluation" class="content-section evaluation-section">
+        <div class="section-heading">
+          <div><p class="eyebrow">05 / OFFLINE BENCHMARKS</p><h2>Evaluation and benchmarking</h2></div>
+          <div class="evaluation-actions"><label class="activity-picker"><span>STORED RUN</span><select id="evaluation-run-select" aria-label="Select stored evaluation run"><option value="">No evaluation runs</option></select></label><button id="evaluation-refresh" class="detail-button" type="button">Refresh</button></div>
+        </div>
+        <p id="evaluation-empty" class="empty-state">No benchmark runs are stored yet. Run <code>python -m backend.evaluate --provider demo</code> to create a reproducible report.</p>
+        <div id="evaluation-content" hidden>
+          <p id="evaluation-run-meta" class="analytics-note"></p>
+          <div id="evaluation-kpis" class="evaluation-kpis"></div>
+          <div class="evaluation-panels">
+            <article class="chart-card"><h3>Classification metrics</h3><div id="evaluation-classification"></div></article>
+            <article class="chart-card"><h3>Routing reliability</h3><div id="evaluation-routing"></div></article>
+            <article class="chart-card"><h3>Multi-agent reliability</h3><div id="evaluation-agents"></div></article>
+            <article class="chart-card"><h3>Latency benchmarks</h3><div id="evaluation-latency" class="chart-area"></div></article>
+            <article class="chart-card"><h3>Agent performance</h3><div id="evaluation-agent-latency" class="chart-area"></div></article>
+            <article class="chart-card"><h3>Benchmark comparison</h3><div id="evaluation-comparison"></div></article>
+          </div>
+          <article class="chart-card confusion-card"><h3>Confusion matrix <span class="micro-label">ACTUAL ROW / PREDICTED COLUMN</span></h3><div id="evaluation-confusion" class="table-wrap"></div></article>
+          <div class="evaluation-downloads"><a id="evaluation-download-json" class="detail-button" download>Download JSON report</a><a id="evaluation-download-csv" class="detail-button" download>Download case CSV</a></div>
+          <details class="evaluation-limitations"><summary>Configuration, robustness results, and limitations</summary><pre id="evaluation-limitations"></pre></details>
+        </div>
+      </section>
+
+      <section id="memory" class="content-section memory-section">
+        <div class="section-heading"><div><p class="eyebrow">05 / MEMORY</p><h2>Agent memory</h2></div><span class="micro-label">SOURCE-VERIFIED</span></div>
+        <div id="memory-state" class="memory-empty">Memory is not configured in this project. No short-term memory, long-term memory, retrieved experiences, reflections, or corrective strategies are available.</div>
+      </section>
+
+      <section id="review" class="content-section">
+        <div class="section-heading"><div><p class="eyebrow">06 / HUMAN-IN-THE-LOOP</p><h2>Review queue</h2></div><span class="micro-label">NO AUTO-EXECUTION WHILE PENDING</span></div>
+        <div id="review-list" class="review-list"><div class="empty-state">No requests waiting for review.</div></div>
+      </section>
+
+      <section id="history" class="content-section">
+        <div class="section-heading history-heading"><div><p class="eyebrow">07 / AUDIT TRAIL</p><h2>Request history</h2></div></div>
+        <div class="history-controls advanced-filters">
+          <label class="sr-only" for="history-search">Search request history</label><input id="history-search" type="search" placeholder="Search requests...">
+          <label class="sr-only" for="history-category">Filter by category</label><select id="history-category"><option value="">All categories</option></select>
+          <label class="sr-only" for="history-status">Filter by execution status</label><select id="history-status"><option value="">All statuses</option><option value="processing">Processing</option><option value="completed">Completed</option><option value="pending_review">Pending review</option><option value="awaiting_clarification">Clarification</option><option value="rejected">Rejected</option><option value="failed">Failed</option></select>
+          <label class="sr-only" for="history-from">Start date</label><input id="history-from" type="date" aria-label="Start date">
+          <label class="sr-only" for="history-to">End date</label><input id="history-to" type="date" aria-label="End date">
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>REQUEST</th><th>CATEGORY</th><th>CONFIDENCE</th><th>WORKFLOW</th><th>STATUS</th><th>TIME</th><th>DETAILS</th></tr></thead><tbody id="history-body"><tr><td colspan="7" class="empty-state">No requests recorded yet.</td></tr></tbody></table></div>
+        <article id="request-detail" class="request-detail" hidden aria-live="polite"></article>
+      </section>
+
+      <section id="monitoring" class="content-section monitoring-section">
+        <div class="section-heading"><div><p class="eyebrow">08 / OBSERVABILITY</p><h2>System health</h2></div><span id="health-status" class="health-badge"><span class="live-dot"></span>Operational</span></div>
+        <div class="health-grid">
+          <div class="health-item"><span>Classification coverage</span><div class="health-value"><strong id="rate-classified">0%</strong><span class="health-track"><i id="bar-classified"></i></span></div></div>
+          <div class="health-item"><span>Successful routing</span><div class="health-value"><strong id="rate-routed">0%</strong><span class="health-track"><i id="bar-routed"></i></span></div></div>
+          <div class="health-item"><span>Workflow execution success</span><div class="health-value"><strong id="rate-execution">0%</strong><span class="health-track"><i id="bar-execution"></i></span></div></div>
+          <div class="health-item"><span>Failed workflow executions</span><div class="health-value"><strong id="count-failed-executions">0</strong><span class="mono-note">Execution failures only</span></div></div>
+          <div class="health-item"><span>Human review rate</span><div class="health-value"><strong id="rate-review">0%</strong><span class="mono-note">Requests escalated from classification</span></div></div>
+          <div class="health-item"><span>Average response latency</span><div class="health-value"><strong id="avg-latency">0 ms</strong><span class="mono-note">Measured from recorded requests</span></div></div>
+          <div class="health-item"><span>Pending human decisions</span><div class="health-value"><strong id="health-review">0</strong><span class="mono-note">Review is required before execution</span></div></div>
+        </div>
+      </section>
+      <footer class="page-footer"><span>P18 / CLOSED-SET CLASSIFICATION</span><span>LOCAL CONTROL PLANE</span></footer>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <script src="/assets/js/app.js" defer></script>
+</body>
+</html>

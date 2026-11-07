@@ -1,0 +1,38 @@
+flowchart TD
+    A((Start)) --> B[Receive JSON request]
+    B --> C{Valid object, non-empty string, <= 4000 chars?}
+    C -->|No| D[Return 400]
+    C -->|Yes| E[Persist processing request]
+    E --> F{Database insert succeeded?}
+    F -->|No| G[Return 503; do not classify]
+    F -->|Yes| H[Classify into configured set]
+    H --> I[Checker validates classification structure]
+    I --> J{Recoverable classification error?}
+    J -->|Yes and attempt < 2| K[Pass checker feedback to next attempt]
+    K --> H
+    J -->|No or attempts exhausted| L[Mark pending review; do not route]
+    I --> M[Validate allowlist, confidence, and review flags]
+    M --> N[Checker verifies validation invariants]
+    N --> O{Valid known category and no review?}
+    O -->|No| L
+    O -->|Yes| P[Select fixed workflow]
+    P --> Q[Checker verifies canonical category route]
+    Q --> R{Route is canonical?}
+    R -->|No| S[Record failure; do not execute]
+    R -->|Yes| T[Run registered workflow]
+    T --> U[Checker validates structured result]
+    U --> V{Execution and result valid?}
+    V -->|No| S
+    V -->|Yes| W[Persist completed request and trace]
+    L --> X{Human action}
+    X -->|Approve eligible supported category| Y[Check canonical route and execute tracked workflow]
+    X -->|Reject| Z[Persist rejected state]
+    X -->|Clarify| AA[Persist awaiting_clarification state]
+    Y --> AB[Checker validates review and execution]
+    D --> AC((End))
+    G --> AC
+    S --> AC
+    W --> AC
+    AB --> AC
+    Z --> AC
+    AA --> AC
