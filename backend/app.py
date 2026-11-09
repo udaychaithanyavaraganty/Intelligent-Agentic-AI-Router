@@ -58,7 +58,12 @@ def create_app(test_config=None):
     timeout = app.config["LLM_TIMEOUT"]
     if not isinstance(timeout, (int, float)) or isinstance(timeout, bool) or not math.isfinite(timeout) or timeout <= 0:
         raise ValueError("LLM_TIMEOUT must be a finite positive number.")
-    Path(app.config["DATABASE"]).parent.mkdir(parents=True, exist_ok=True)
+
+    # Create both parent directories up front. The Render database paths point
+    # to /var/data, which may not exist until the persistent disk is mounted.
+    for database_path in (app.config["DATABASE"], app.config["EVALUATION_DATABASE"]):
+        Path(database_path).parent.mkdir(parents=True, exist_ok=True)
+
     categories = load_categories()
     routing_rules = load_routing_rules()
     history = HistoryService(app.config["DATABASE"])
@@ -363,4 +368,8 @@ def create_app(test_config=None):
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=int(os.getenv("PORT", "5000")), debug=os.getenv("FLASK_DEBUG") == "1")
+    app.run(
+        host=os.getenv("FLASK_HOST", "0.0.0.0"),
+        port=int(os.getenv("PORT", "5000")),
+        debug=os.getenv("FLASK_DEBUG") == "1",
+    )
